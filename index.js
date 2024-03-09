@@ -41,45 +41,51 @@ app.get('/', (request, response) => {
   
 app.get('/api/persons', (request, response) => {
     Person.find({})
-        .then(persons => {
-            response.json(persons);
-        })
+    .then(persons => {
+        response.json(persons);
+    })
 });
 
 app.get('/api/persons/:id', (request, response) => {
     Person.findById(request.params.id)
-        .then(person => {
-            response.json(person)
-        })
+    .then(person => {
+        if (person) {
+            response.json(person);
+        } else {
+            response.status(404).end();
+        }
+    })
+    .catch(error => {
+        console.log(error);
+        response.status(400)
+        .send({ error: 'malformatted id' });
+    });
 });
 
 app.get('/api/info', (request, response) => {
     let PhonebookSize = persons.length;
-    response.send(`Phonebook has info for ${PhonebookSize} people</br>
-    ${Date()}`);
-})
+    response.send(`Phonebook has info for ${PhonebookSize} people</br>${Date()}`);
+});
 
 function personExists(name) {
     return persons.some(person => person.name === name);
-}
+};
 
 function createPerson(body){
     return new Person ({
             name: body.name,
             number: body.number,
     });
-}
+};
 
 const validatePerson = (request, response, next) => {
     const {name, number } = request.body
     
     if (!name || !number){
         return response.status(400).json({error: 'content is missing'});
-    }
-
-    if (personExists(name)) {
+    } else if (personExists(name)) {
         return response.status(409).json({ error: 'resource exists'});
-    }
+    };
 
     next();
 };
@@ -87,11 +93,10 @@ const validatePerson = (request, response, next) => {
 app.post('/api/persons',validatePerson, (request, response) => {
     const body = request.body;
     const newperson = createPerson(body);
-    //persons = persons.concat(newperson);
     newperson.save()
-        .then(savedPerson => {
-            response.json(savedPerson)
-        })
+    .then(savedPerson => {
+        response.json(savedPerson)
+    })
 });
 
 app.delete('/api/persons/:id', (request, response) => {
