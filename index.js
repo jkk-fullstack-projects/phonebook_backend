@@ -59,9 +59,15 @@ app.get('/api/persons/:id', (request, response) => {
     .catch(error => next(error));
 });
 
-app.get('/api/info', (request, response) => {
-    let PhonebookSize = persons.length;
-    response.send(`Phonebook has info for ${PhonebookSize} people</br>${Date()}`);
+app.get('/api/info', (request, response, next) => {
+    const date = new Date();
+    Person
+    .find({}).then(data => {
+        response.send(
+            `<p>Phonebook has info for ${data.length} people <p>
+            <p>${Date()}<p>`
+        );
+    })
 });
 
 function personExists(name) {
