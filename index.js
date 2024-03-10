@@ -64,8 +64,7 @@ app.get('/api/info', (request, response, next) => {
     Person
     .find({}).then(data => {
         response.send(
-            `<p>Phonebook has info for ${data.length} people <p>
-            <p>${Date()}<p>`
+            `<p>Phonebook has info for ${data.length} people ${Date()}<p>`
         );
     })
 });
@@ -93,13 +92,14 @@ const validatePerson = (request, response, next) => {
     next();
 };
 
-app.post('/api/persons',validatePerson, (request, response) => {
+app.post('/api/persons',validatePerson, (request, response, next) => {
     const body = request.body;
     const newperson = createPerson(body);
     newperson.save()
     .then(savedPerson => {
         response.json(savedPerson)
     })
+    .catch(error => next(error))
 });
 
 app.delete('/api/persons/:id', (request, response, next) => {
@@ -107,7 +107,9 @@ app.delete('/api/persons/:id', (request, response, next) => {
     .then(result => {
         response.status(204).end();
     })
-    .catch(error => next(error))
+    .catch(error =>{
+        next(error);
+    })
 });
 
 app.put('/api/persons/:id', (request, response, next) => {
