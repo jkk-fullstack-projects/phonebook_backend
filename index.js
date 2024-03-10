@@ -99,7 +99,10 @@ app.post('/api/persons',validatePerson, (request, response, next) => {
     .then(savedPerson => {
         response.json(savedPerson)
     })
-    .catch(error => next(error))
+    .catch(error => {
+        console.log("error: ", error)
+        next(error)
+    })
 });
 
 app.delete('/api/persons/:id', (request, response, next) => {
