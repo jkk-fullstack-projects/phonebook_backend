@@ -100,8 +100,12 @@ app.post('/api/persons',validatePerson, (request, response, next) => {
         response.json(savedPerson)
     })
     .catch(error => {
-        console.log("error: ", error)
-        next(error)
+        if (error.name === 'ValidationError') {
+            return response.status(400).json({ error: error.message });
+        } else {
+            console.error("Unexpected error: ", error);
+            return response.status(500).json({ error: 'Internal server error' });
+        }
     })
 });
 
@@ -111,7 +115,8 @@ app.delete('/api/persons/:id', (request, response, next) => {
         if (result) {
             response.status(204).end();
         } else {
-            response.status(404).json({ error: 'Person not found' });
+            const errorMessage = 'Person not found';
+            response.status(404).json({ error: errorMessage });
         }
     })
     .catch(error =>next(error))
