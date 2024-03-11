@@ -30,7 +30,7 @@ const personSchema = new mongoose.Schema({
             message: 'This is not a valid phone number'
         },
         minlength: 7,
-        maxlength: 11,
+        maxlength: 12,
         required: [true, 'User phone number required']
     }
 });
