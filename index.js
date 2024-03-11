@@ -111,8 +111,6 @@ app.delete('/api/persons/:id', (request, response, next) => {
         if (result) {
             response.status(204).end();
         } else {
-            console.log("sending 404 when trying to delete nonexistent")
-
             response.status(404).json({ error: 'Person not found' });
         }
     })
@@ -143,17 +141,14 @@ const errorHandler = (error, request, response, next) => {
     console.error(error.message);
 
     if (error.name === 'CastError') {
-        return response.status(400)
-        .send({ error: 'malformatted id' });
+        return response.status(400).send({ error: 'malformatted id' });
     } else if (error.name === 'ValidationError') {
-        return response.status(400)
-        .send({ error: error.message });
+        return response.status(400).send({ error: error.message });
     } else if (error.name === 'MongoServerError' && error.code === 11000) {
         return response.status(409)
         .json({ error: 'resource already exists' });
-    }
-
-    next(error);;
+    } 
+    next(error);
 }
 
 app.use(errorHandler);
