@@ -1,8 +1,16 @@
-require('dotenv').config();
-const express = require('express');
-const app = express();
-const cors = require('cors');
-app.use(cors());
+const app = require('./app');
+const config = require('./utils/config');
+const logger = require('./utils/logger');
+
+app.listen(config.PORT, () => {
+  logger.info(`Server running on port ${config.PORT}`);
+});
+
+/*require('dotenv').config();
++const express = require('express');
++const app = express();
++const cors = require('cors');
++app.use(cors());
 app.use(express.json());
 
 const morgan = require('morgan');
@@ -163,3 +171,4 @@ const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+*/
