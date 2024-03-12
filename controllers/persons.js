@@ -35,12 +35,6 @@ personsRouter.get('/info', (request, response, next) => {
     .catch(error => next(error));
 });
 
-let persons = [];
-
-function personExists(name) {
-  return persons.some(person => person.name === name);
-}
-
 function createPerson(body) {
   return new Person({
     name: body.name,
@@ -51,13 +45,19 @@ function createPerson(body) {
 const validatePerson = (request, response, next) => {
   const { name, number } = request.body;
 
-  if (!name || !number){
+  if (!name || !number) {
     return response.status(400).json({ error: 'content is missing' });
-  } else if (personExists(name)) {
-    return response.status(409).json({ error: 'resource exists' });
   }
-
-  next();
+  Person.findOne({ name: name })
+    .then(foundPerson => {
+      if (foundPerson) {
+        return response.status(409).json({ error: 'name already exists' });
+      } else {
+        // If no person with the name exists, proceed to the next middleware or function
+        next();
+      }
+    })
+    .catch(error => next(error));
 };
 
 personsRouter.post('/',validatePerson, (request, response) => {
